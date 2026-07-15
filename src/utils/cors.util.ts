@@ -1,5 +1,9 @@
 import { env } from "../config/env";
 
+function isVercelPreviewOrigin(origin: string): boolean {
+  return /^https:\/\/[\w-]+\.vercel\.app$/.test(origin);
+}
+
 export function getAllowedOrigins(): string[] {
   const origins = new Set<string>([env.CLIENT_URL]);
 
@@ -11,4 +15,17 @@ export function getAllowedOrigins(): string[] {
   }
 
   return [...origins];
+}
+
+export function isOriginAllowed(origin: string | undefined): boolean {
+  if (!origin) return true;
+
+  const allowed = getAllowedOrigins();
+  if (allowed.includes(origin)) return true;
+
+  if (env.ALLOW_VERCEL_PREVIEWS && isVercelPreviewOrigin(origin)) {
+    return true;
+  }
+
+  return false;
 }

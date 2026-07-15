@@ -8,6 +8,10 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   CLIENT_URL: z.string().url(),
   CLIENT_URLS: z.string().optional(),
+  ALLOW_VERCEL_PREVIEWS: z
+    .string()
+    .optional()
+    .transform((value) => value === "true"),
   DATABASE_URL: z.string().url(),
   JWT_SECRET: z.string().min(16),
   JWT_EXPIRES_IN: z.string().default("7d"),

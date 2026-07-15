@@ -49,18 +49,7 @@ export const authService = {
       throw ApiError.unauthorized(MESSAGES.AUTH.INVALID_CREDENTIALS);
     }
 
-    if (!user.password) {
-      throw ApiError.unauthorized(MESSAGES.AUTH.INVALID_CREDENTIALS);
-    }
-
-    let isMatch = false;
-    try {
-      isMatch = await comparePassword(input.password, user.password);
-    } catch (error) {
-      console.error("Password compare failed:", error);
-      throw ApiError.unauthorized(MESSAGES.AUTH.INVALID_CREDENTIALS);
-    }
-
+    const isMatch = await comparePassword(input.password, user.password);
     if (!isMatch) {
       throw ApiError.unauthorized(MESSAGES.AUTH.INVALID_CREDENTIALS);
     }

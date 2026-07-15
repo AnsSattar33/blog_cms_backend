@@ -7,17 +7,15 @@ import rateLimit from "express-rate-limit";
 import morgan from "morgan";
 import { env } from "./config/env";
 import { configureCloudinary } from "./config/cloudinary";
-import { createRateLimitOptions } from "./config/rate-limit";
 import routes from "./routes";
 import { notFoundMiddleware } from "./middleware/not-found.middleware";
 import { errorMiddleware } from "./middleware/error.middleware";
-import { getAllowedOrigins } from "./utils/cors.util";
+import { isOriginAllowed } from "./utils/cors.util";
 
 configureCloudinary();
 
 export const createApp = (): Application => {
   const app = express();
-  const allowedOrigins = getAllowedOrigins();
 
   app.set("trust proxy", 1);
 
@@ -31,7 +29,7 @@ export const createApp = (): Application => {
   app.use(
     cors({
       origin(origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (isOriginAllowed(origin)) {
           callback(null, true);
           return;
         }
@@ -43,11 +41,34 @@ export const createApp = (): Application => {
   app.use(compression());
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-  app.use(cookieParser(env.COOKIE_SECRET));
 
-  const authLimiter = rateLimit(createRateLimitOptions(20));
+  const cookieSecret = process.env.COOKIE_SECRET ?? env.COOKIE_SECRET;
+  if (!cookieSecret || cookieSecret.length < 16) {
+    throw new Error(
+      "COOKIE_SECRET must be set in environment variables (minimum 16 characters)"
+    );
+  }
+  app.use(cookieParser(cookieSecret));
 
-  const writeLimiter = rateLimit(createRateLimitOptions(50));
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    message: {
+      success: false,
+      message: "Too many requests, please try again later",
+      errors: ["Rate limit exceeded"],
+    },
+  });
+
+  const writeLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 50,
+    message: {
+      success: false,
+      message: "Too many requests, please try again later",
+      errors: ["Rate limit exceeded"],
+    },
+  });
 
   app.use("/api/auth", authLimiter);
   app.use("/api/blogs", (req, res, next) => {
@@ -65,7 +86,3 @@ export const createApp = (): Application => {
 
   return app;
 };
-
-const app = createApp();
-
-export default app;

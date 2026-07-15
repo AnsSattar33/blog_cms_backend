@@ -39,17 +39,6 @@ export const errorMiddleware = (
     );
   }
 
-  const pgCode = (err as { code?: string }).code;
-  if (pgCode?.startsWith("42") || pgCode === "ECONNREFUSED" || pgCode === "ENOTFOUND") {
-    console.error("Database error:", err);
-    return sendFailure(
-      res,
-      HTTP_STATUS.SERVICE_UNAVAILABLE,
-      "Database unavailable",
-      ["Database unavailable"]
-    );
-  }
-
   if (err instanceof jwt.JsonWebTokenError) {
     return sendFailure(res, HTTP_STATUS.UNAUTHORIZED, "Invalid token", [err.message]);
   }
@@ -63,27 +52,6 @@ export const errorMiddleware = (
       return sendFailure(res, HTTP_STATUS.BAD_REQUEST, MESSAGES.UPLOAD.TOO_LARGE, [err.message]);
     }
     return sendFailure(res, HTTP_STATUS.BAD_REQUEST, MESSAGES.UPLOAD.UPLOAD_FAILED, [err.message]);
-  }
-
-  const bodyParserError = err as { type?: string; statusCode?: number };
-  if (bodyParserError.type === "entity.parse.failed") {
-    return sendFailure(
-      res,
-      HTTP_STATUS.BAD_REQUEST,
-      "Invalid JSON body",
-      ["Invalid JSON body"]
-    );
-  }
-
-  const rateLimitCode = (err as { code?: string }).code;
-  if (rateLimitCode?.startsWith("ERR_ERL_")) {
-    console.error("Rate limit configuration error:", err);
-    return sendFailure(
-      res,
-      HTTP_STATUS.TOO_MANY_REQUESTS,
-      "Too many requests, please try again later",
-      ["Rate limit exceeded"]
-    );
   }
 
   console.error("Unhandled error:", err);

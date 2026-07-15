@@ -82,24 +82,16 @@ This backend is configured for Vercel serverless:
 
 ### Required env vars on Vercel
 
-`DATABASE_URL`, `JWT_SECRET`, `COOKIE_SECRET`, `CLIENT_URL`, and Cloudinary keys if using uploads.
+| Variable | Example |
+|----------|---------|
+| `DATABASE_URL` | Neon connection string |
+| `JWT_SECRET` | Strong secret (16+ chars) |
+| `COOKIE_SECRET` | Strong secret (16+ chars) — **required for login** |
+| `CLIENT_URL` | `https://your-frontend.vercel.app` |
+| `NODE_ENV` | `production` |
+| `ALLOW_VERCEL_PREVIEWS` | `true` (optional; allows `*.vercel.app` preview URLs) |
 
-### Database setup on production (important)
-
-`/api/health` only checks uptime unless you redeploy with the latest code. **Login requires the database schema and users.**
-
-From your machine, using the production `DATABASE_URL` from Vercel:
-
-```bash
-cd backend
-# set DATABASE_URL to your Neon production connection string
-npm run db:push
-npm run seed
-```
-
-Default admin after seed: `admin@blog.com` / `password123`
-
-Custom users like `user11@gmail.com` only work if they were registered or seeded in the **production** database. Wrong credentials return `401`; missing tables/DB issues return `500` or `503`.
+`COOKIE_SECRET` must be set on Vercel. Without it, login returns 500: `cookieParser("secret") required for signed cookies`.
 
 ## Environment Variables
 
