@@ -9,7 +9,6 @@ export const getCookieOptions = () => ({
   sameSite: isProduction ? ("none" as const) : ("lax" as const),
   path: "/",
   maxAge: 7 * 24 * 60 * 60 * 1000,
-  signed: true,
 });
 
 export const COOKIE_NAME = () => env.COOKIE_NAME;

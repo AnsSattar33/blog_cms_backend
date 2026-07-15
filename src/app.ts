@@ -41,14 +41,7 @@ export const createApp = (): Application => {
   app.use(compression());
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-
-  const cookieSecret = process.env.COOKIE_SECRET ?? env.COOKIE_SECRET;
-  if (!cookieSecret || cookieSecret.length < 16) {
-    throw new Error(
-      "COOKIE_SECRET must be set in environment variables (minimum 16 characters)"
-    );
-  }
-  app.use(cookieParser(cookieSecret));
+  app.use(cookieParser());
 
   const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,

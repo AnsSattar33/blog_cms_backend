@@ -17,8 +17,8 @@ export const authMiddleware = (
     const cookies = req.cookies as Record<string, string> | undefined;
 
     token =
-      signedCookies?.[env.COOKIE_NAME] ||
-      cookies?.[env.COOKIE_NAME];
+      cookies?.[env.COOKIE_NAME] ||
+      signedCookies?.[env.COOKIE_NAME];
 
     if (!token) {
       const authHeader = req.headers.authorization;

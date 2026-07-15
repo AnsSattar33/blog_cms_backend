@@ -15,7 +15,7 @@ const envSchema = z.object({
   DATABASE_URL: z.string().url(),
   JWT_SECRET: z.string().min(16),
   JWT_EXPIRES_IN: z.string().default("7d"),
-  COOKIE_SECRET: z.string().min(16),
+  COOKIE_SECRET: z.string().min(16).optional(),
   COOKIE_NAME: z.string().default("blog-cms-session"),
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),

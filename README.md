@@ -86,12 +86,12 @@ This backend is configured for Vercel serverless:
 |----------|---------|
 | `DATABASE_URL` | Neon connection string |
 | `JWT_SECRET` | Strong secret (16+ chars) |
-| `COOKIE_SECRET` | Strong secret (16+ chars) — **required for login** |
 | `CLIENT_URL` | `https://your-frontend.vercel.app` |
 | `NODE_ENV` | `production` |
 | `ALLOW_VERCEL_PREVIEWS` | `true` (optional; allows `*.vercel.app` preview URLs) |
+| `COOKIE_SECRET` | Optional (legacy; auth uses unsigned HttpOnly JWT cookies) |
 
-`COOKIE_SECRET` must be set on Vercel. Without it, login returns 500: `cookieParser("secret") required for signed cookies`.
+Auth cookies are **HttpOnly JWT tokens** (signed by `JWT_SECRET`). They do not use `cookie-parser` signed cookies, so login works reliably on Vercel serverless.
 
 ## Environment Variables
 
