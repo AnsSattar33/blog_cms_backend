@@ -65,6 +65,16 @@ export const errorMiddleware = (
     return sendFailure(res, HTTP_STATUS.BAD_REQUEST, MESSAGES.UPLOAD.UPLOAD_FAILED, [err.message]);
   }
 
+  const bodyParserError = err as { type?: string; statusCode?: number };
+  if (bodyParserError.type === "entity.parse.failed") {
+    return sendFailure(
+      res,
+      HTTP_STATUS.BAD_REQUEST,
+      "Invalid JSON body",
+      ["Invalid JSON body"]
+    );
+  }
+
   const rateLimitCode = (err as { code?: string }).code;
   if (rateLimitCode?.startsWith("ERR_ERL_")) {
     console.error("Rate limit configuration error:", err);
