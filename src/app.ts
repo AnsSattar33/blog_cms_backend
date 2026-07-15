@@ -70,3 +70,7 @@ export const createApp = (): Application => {
 
   return app;
 };
+
+const app = createApp();
+
+export default app;

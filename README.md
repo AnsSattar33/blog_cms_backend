@@ -64,6 +64,26 @@ npm run lint
 Server: `http://localhost:3001`
 Health: `http://localhost:3001/api/health`
 
+## Deploying to Vercel
+
+This backend is configured for Vercel serverless:
+
+- **`src/app.ts`** — builds the Express app and exports it as `default` (no `listen()`)
+- **`src/server.ts`** — local dev only; calls `app.listen()`
+- **`api/index.ts`** — Vercel entry; connects to Neon, then forwards requests to the Express app
+- **`vercel.json`** — routes all traffic to `api/index.ts`
+
+### Vercel project settings
+
+1. Set the **Root Directory** to `backend` (if deploying from the monorepo)
+2. Add environment variables from `.env.example` in the Vercel dashboard
+3. Set `CLIENT_URL` to your deployed frontend URL (for CORS)
+4. Deploy — do **not** point Vercel at `src/app.ts` or `src/server.ts` directly
+
+### Required env vars on Vercel
+
+`DATABASE_URL`, `JWT_SECRET`, `COOKIE_SECRET`, `CLIENT_URL`, and Cloudinary keys if using uploads.
+
 ## Environment Variables
 
 | Variable | Description |
