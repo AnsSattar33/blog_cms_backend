@@ -84,6 +84,23 @@ This backend is configured for Vercel serverless:
 
 `DATABASE_URL`, `JWT_SECRET`, `COOKIE_SECRET`, `CLIENT_URL`, and Cloudinary keys if using uploads.
 
+### Database setup on production (important)
+
+`/api/health` only checks uptime unless you redeploy with the latest code. **Login requires the database schema and users.**
+
+From your machine, using the production `DATABASE_URL` from Vercel:
+
+```bash
+cd backend
+# set DATABASE_URL to your Neon production connection string
+npm run db:push
+npm run seed
+```
+
+Default admin after seed: `admin@blog.com` / `password123`
+
+Custom users like `user11@gmail.com` only work if they were registered or seeded in the **production** database. Wrong credentials return `401`; missing tables/DB issues return `500` or `503`.
+
 ## Environment Variables
 
 | Variable | Description |

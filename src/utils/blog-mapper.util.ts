@@ -1,4 +1,5 @@
 import { BlogWithAuthor, UserPublic } from "../db/schema";
+import { toIsoString } from "./date.util";
 
 export const mapBlogToResponse = (blog: BlogWithAuthor) => {
   const status = blog.isPublished ? "published" : "draft";
@@ -28,9 +29,9 @@ export const mapBlogToResponse = (blog: BlogWithAuthor) => {
     status,
     readingTime: blog.readingTime,
     readingTimeMinutes: blog.readingTime,
-    publishedAt: blog.publishedAt ? blog.publishedAt.toISOString() : null,
-    createdAt: blog.createdAt.toISOString(),
-    updatedAt: blog.updatedAt.toISOString(),
+    publishedAt: toIsoString(blog.publishedAt),
+    createdAt: toIsoString(blog.createdAt) ?? new Date().toISOString(),
+    updatedAt: toIsoString(blog.updatedAt) ?? new Date().toISOString(),
   };
 };
 
@@ -40,6 +41,6 @@ export const mapUserToResponse = (user: UserPublic & { id: string }) => ({
   email: user.email,
   role: user.role,
   avatar: user.avatar ?? undefined,
-  createdAt: user.createdAt.toISOString(),
-  updatedAt: user.updatedAt.toISOString(),
+  createdAt: toIsoString(user.createdAt) ?? new Date().toISOString(),
+  updatedAt: toIsoString(user.updatedAt) ?? new Date().toISOString(),
 });

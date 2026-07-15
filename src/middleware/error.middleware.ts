@@ -39,6 +39,17 @@ export const errorMiddleware = (
     );
   }
 
+  const pgCode = (err as { code?: string }).code;
+  if (pgCode?.startsWith("42") || pgCode === "ECONNREFUSED" || pgCode === "ENOTFOUND") {
+    console.error("Database error:", err);
+    return sendFailure(
+      res,
+      HTTP_STATUS.SERVICE_UNAVAILABLE,
+      "Database unavailable",
+      ["Database unavailable"]
+    );
+  }
+
   if (err instanceof jwt.JsonWebTokenError) {
     return sendFailure(res, HTTP_STATUS.UNAUTHORIZED, "Invalid token", [err.message]);
   }
