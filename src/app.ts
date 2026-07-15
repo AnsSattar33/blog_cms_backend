@@ -10,11 +10,15 @@ import { configureCloudinary } from "./config/cloudinary";
 import routes from "./routes";
 import { notFoundMiddleware } from "./middleware/not-found.middleware";
 import { errorMiddleware } from "./middleware/error.middleware";
+import { getAllowedOrigins } from "./utils/cors.util";
 
 configureCloudinary();
 
 export const createApp = (): Application => {
   const app = express();
+  const allowedOrigins = getAllowedOrigins();
+
+  app.set("trust proxy", 1);
 
   if (env.NODE_ENV === "development") {
     app.use(morgan("dev"));
@@ -25,7 +29,13 @@ export const createApp = (): Application => {
   app.use(helmet());
   app.use(
     cors({
-      origin: env.CLIENT_URL,
+      origin(origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+          return;
+        }
+        callback(null, false);
+      },
       credentials: true,
     })
   );
