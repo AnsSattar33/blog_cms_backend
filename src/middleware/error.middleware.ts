@@ -65,6 +65,17 @@ export const errorMiddleware = (
     return sendFailure(res, HTTP_STATUS.BAD_REQUEST, MESSAGES.UPLOAD.UPLOAD_FAILED, [err.message]);
   }
 
+  const rateLimitCode = (err as { code?: string }).code;
+  if (rateLimitCode?.startsWith("ERR_ERL_")) {
+    console.error("Rate limit configuration error:", err);
+    return sendFailure(
+      res,
+      HTTP_STATUS.TOO_MANY_REQUESTS,
+      "Too many requests, please try again later",
+      ["Rate limit exceeded"]
+    );
+  }
+
   console.error("Unhandled error:", err);
 
   const message =

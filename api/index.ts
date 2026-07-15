@@ -19,5 +19,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 
-  return app(req, res);
+  await new Promise<void>((resolve, reject) => {
+    res.on("finish", () => resolve());
+    res.on("close", () => resolve());
+    res.on("error", reject);
+    app(req, res);
+  });
 }
